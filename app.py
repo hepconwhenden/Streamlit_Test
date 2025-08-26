@@ -13,7 +13,7 @@ st.markdown("""
 """)
 
 # 数式入力欄
-expression = st.text_input("数式を入力してください", value="sin(math.pi / 2) + cos(0)")
+expression = st.text_input("数式を入力してください", value="")
 
 # 安全な評価関数
 def safe_eval(expr):
