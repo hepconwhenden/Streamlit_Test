@@ -21,7 +21,7 @@ unit_descriptions = {
 }
 
 # タイトル
-st.title("🔧 トルク換算ツール")
+st.title("🔧 トルク換算アプリ")
 
 # 入力UI
 value = st.number_input("数値を入力", min_value=0.0, format="%.4f")
