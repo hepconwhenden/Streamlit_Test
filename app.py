@@ -1,32 +1,40 @@
 import streamlit as st
-import requests
-from streamlit_geolocation import streamlit_geolocation
+import math
 
-API_KEY = "722378415b404ea395945853252608"
+st.title("📱 タップ式数式電卓")
 
-st.title("📍 WeatherAPIで現在地の天気を取得")
+# セッション状態で式を保持
+if "expression" not in st.session_state:
+    st.session_state.expression = ""
 
-location = streamlit_geolocation()
+# ボタン群
+buttons = [
+    ["7", "8", "9", "/", "sqrt("],
+    ["4", "5", "6", "*", "sin("],
+    ["1", "2", "3", "-", "cos("],
+    ["0", ".", "(", ")", "+"],
+    ["C", "←", "=", "pi", "tan("]
+]
 
-if location and location["latitude"] and location["longitude"]:
-    lat = location["latitude"]
-    lon = location["longitude"]
+# 数式表示
+st.text_input("数式", value=st.session_state.expression, key="display", disabled=True)
 
-    st.success(f"現在地：緯度 {float(lat):.4f}, 経度 {float(lon):.4f}")
-
-    url = f"https://api.weatherapi.com/v1/current.json?key={API_KEY}&q={lat},{lon}&lang=ja"
-    response = requests.get(url)
-
-    if response.status_code == 200:
-        data = response.json()
-        temp = data["current"]["temp_c"]
-        condition = data["current"]["condition"]["text"]
-        wind = data["current"]["wind_kph"]
-
-        st.metric("🌡️ 気温", f"{temp:.1f} °C")
-        st.write(f"🌤️ 天気：{condition}")
-        st.write(f"💨 風速：{wind} km/h")
-    else:
-        st.error("WeatherAPIからのデータ取得に失敗しました。")
-else:
-    st.info("📡 位置情報を取得中です…")
+# ボタン描画
+for row in buttons:
+    cols = st.columns(len(row))
+    for i, label in enumerate(row):
+        if cols[i].button(label):
+            if label == "C":
+                st.session_state.expression = ""
+            elif label == "←":
+                st.session_state.expression = st.session_state.expression[:-1]
+            elif label == "=":
+                try:
+                    allowed = {k: v for k, v in math.__dict__.items() if not k.startswith("__")}
+                    allowed.update({"abs": abs, "round": round, "pi": math.pi})
+                    result = eval(st.session_state.expression, {"__builtins__": {}}, allowed)
+                    st.session_state.expression = str(result)
+                except Exception as e:
+                    st.error(f"エラー：{e}")
+            else:
+                st.session_state.expression += label
