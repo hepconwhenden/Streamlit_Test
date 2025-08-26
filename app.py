@@ -1,11 +1,11 @@
 import streamlit as st
-from streamlit_geolocation import geolocation
+from streamlit_geolocation import streamlit_geolocation
 import requests
 
 st.title("📱 現在地の気温（Open-Meteo）")
 
 # 位置情報の取得
-location = geolocation()
+location = streamlit_geolocation()
 
 if location:
     lat = location["latitude"]
