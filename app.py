@@ -1,13 +1,13 @@
 import streamlit as st
 import requests
-from streamlit_geolocation import geolocation  # GPS取得
+from streamlit_geolocation import streamlit_geolocation   # GPS取得
 
 # WeatherAPIのAPIキー
 API_KEY = "722378415b404ea395945853252608"
 
 st.title("📱 WeatherAPIで現在地の気温取得")
 
-location = geolocation()
+location = streamlit_geolocation ()
 
 if location:
     lat = location["latitude"]
