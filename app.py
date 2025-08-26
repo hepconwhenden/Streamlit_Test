@@ -1,40 +1,38 @@
 import streamlit as st
 import math
 
-st.title("📱 タップ式数式電卓")
+st.title("🧮 数式対応電卓（√・カッコ・三角関数OK）")
 
-# セッション状態で式を保持
-if "expression" not in st.session_state:
-    st.session_state.expression = ""
+st.markdown("""
+**使える関数一覧：**
+- `sqrt(x)`：平方根
+- `sin(x)`、`cos(x)`、`tan(x)`：三角関数（ラジアン）
+- `log(x)`、`log10(x)`：自然対数・常用対数
+- `abs(x)`、`round(x)`：絶対値・四捨五入
+- `pow(x, y)`：累乗
+""")
 
-# ボタン群
-buttons = [
-    ["7", "8", "9", "/", "sqrt("],
-    ["4", "5", "6", "*", "sin("],
-    ["1", "2", "3", "-", "cos("],
-    ["0", ".", "(", ")", "+"],
-    ["C", "←", "=", "pi", "tan("]
-]
+# 数式入力欄
+expression = st.text_input("数式を入力してください", value="sin(math.pi / 2) + cos(0)")
 
-# 数式表示
-st.text_input("数式", value=st.session_state.expression, key="display", disabled=True)
+# 安全な評価関数
+def safe_eval(expr):
+    allowed_names = {
+        k: v for k, v in math.__dict__.items() if not k.startswith("__")
+    }
+    allowed_names.update({
+        "abs": abs,
+        "round": round,
+        "pow": pow,
+        "math": math  # 明示的に math.pi などを使えるように
+    })
 
-# ボタン描画
-for row in buttons:
-    cols = st.columns(len(row))
-    for i, label in enumerate(row):
-        if cols[i].button(label):
-            if label == "C":
-                st.session_state.expression = ""
-            elif label == "←":
-                st.session_state.expression = st.session_state.expression[:-1]
-            elif label == "=":
-                try:
-                    allowed = {k: v for k, v in math.__dict__.items() if not k.startswith("__")}
-                    allowed.update({"abs": abs, "round": round, "pi": math.pi})
-                    result = eval(st.session_state.expression, {"__builtins__": {}}, allowed)
-                    st.session_state.expression = str(result)
-                except Exception as e:
-                    st.error(f"エラー：{e}")
-            else:
-                st.session_state.expression += label
+    return eval(expr, {"__builtins__": {}}, allowed_names)
+
+# 計算実行
+if st.button("計算する"):
+    try:
+        result = safe_eval(expression)
+        st.success(f"結果：{result}")
+    except Exception as e:
+        st.error(f"エラー：{e}")
