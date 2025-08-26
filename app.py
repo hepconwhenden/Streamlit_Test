@@ -1,31 +1,32 @@
 import streamlit as st
-from streamlit_geolocation import streamlit_geolocation
 import requests
+from streamlit_geolocation import geolocation  # GPS取得
 
-st.title("📱 現在地の気温（Open-Meteo）")
+# WeatherAPIのAPIキー
+API_KEY = "722378415b404ea395945853252608"
 
-# 位置情報の取得
-location = streamlit_geolocation()
+st.title("📱 WeatherAPIで現在地の気温取得")
+
+location = geolocation()
 
 if location:
     lat = location["latitude"]
     lon = location["longitude"]
     st.success(f"現在地：緯度 {lat:.4f}, 経度 {lon:.4f}")
 
-    # Open-Meteo APIで現在の気象データ取得
-    url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true"
-    response = requests.get(url)
+    # WeatherAPIのエンドポイント
+    url = f"https://api.weatherapi.com/v1/current.json?key={API_KEY}&q={lat},{lon}&lang=ja"
 
+    response = requests.get(url)
     if response.status_code == 200:
         data = response.json()
-        temp = data["current_weather"]["temperature"]
-        wind = data["current_weather"]["windspeed"]
-        weather_code = data["current_weather"]["weathercode"]
-
+        temp = data["current"]["temp_c"]
+        condition = data["current"]["condition"]["text"]
+        wind = data["current"]["wind_kph"]
         st.metric(label="🌡️ 気温", value=f"{temp:.1f} °C")
+        st.write(f"🌤️ 天気：{condition}")
         st.write(f"💨 風速：{wind} km/h")
-        st.write(f"🧭 天気コード：{weather_code}")
     else:
-        st.error("気象データの取得に失敗しました。")
+        st.error("WeatherAPIからのデータ取得に失敗しました。")
 else:
     st.warning("位置情報の取得を許可してください。")
