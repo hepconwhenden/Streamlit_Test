@@ -1,7 +1,7 @@
 import streamlit as st
 import math
 
-st.title("🧮 数式対応電卓（√・カッコ・三角関数OK）")
+st.title("🧮 数式電卓")
 
 st.markdown("""
 **使える関数一覧：**
