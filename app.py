@@ -21,7 +21,8 @@ bg_image_file = st.sidebar.file_uploader("背景画像をアップロード", ty
 
 # 背景画像の読み込みとサイズ取得
 if bg_image_file:
-    image = Image.open(bg_image_file)
+    image = Image.open(bg_image_file).convert("RGB") 
+
     width, height = image.size
 else:
     image = None
