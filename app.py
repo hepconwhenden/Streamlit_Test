@@ -1,38 +1,56 @@
 import streamlit as st
-import math
+from streamlit_drawable_canvas import st_canvas
+from PIL import Image
+import pandas as pd
 
-st.title("🧮 数式電卓")
+st.title("📸 画像に描画できる Streamlit アプリ")
 
-st.markdown("""
-**使える関数一覧：**
-- `sqrt(x)`：平方根
-- `sin(x)`、`cos(x)`、`tan(x)`：三角関数（ラジアン）
-- `log(x)`、`log10(x)`：自然対数・常用対数
-- `abs(x)`、`round(x)`：絶対値・四捨五入
-- `pow(x, y)`：累乗
-""")
+# Sidebar 設定
+st.sidebar.header("🛠️ 描画ツール設定")
+drawing_mode = st.sidebar.selectbox("描画モード", ("freedraw", "line", "rect", "circle", "point", "transform"))
+stroke_width = st.sidebar.slider("線の太さ", 1, 25, 3)
+stroke_color = st.sidebar.color_picker("線の色", "#000000")
+bg_color = st.sidebar.color_picker("背景色（画像がない場合）", "#eeeeee")
+realtime_update = st.sidebar.checkbox("リアルタイム更新", True)
 
-# 数式入力欄
-expression = st.text_input("数式を入力してください", value="")
+# Point モード用の半径設定
+point_display_radius = st.sidebar.slider("ポイント表示半径", 1, 25, 3) if drawing_mode == "point" else 0
 
-# 安全な評価関数
-def safe_eval(expr):
-    allowed_names = {
-        k: v for k, v in math.__dict__.items() if not k.startswith("__")
-    }
-    allowed_names.update({
-        "abs": abs,
-        "round": round,
-        "pow": pow,
-        "math": math  # 明示的に math.pi などを使えるように
-    })
+# 背景画像のアップロード
+bg_image_file = st.sidebar.file_uploader("背景画像をアップロード", type=["png", "jpg", "jpeg"])
 
-    return eval(expr, {"__builtins__": {}}, allowed_names)
+# 背景画像の読み込みとサイズ取得
+if bg_image_file:
+    image = Image.open(bg_image_file)
+    width, height = image.size
+else:
+    image = None
+    width, height = 600, 400  # デフォルトサイズ
 
-# 計算実行
-if st.button("計算する"):
-    try:
-        result = safe_eval(expression)
-        st.success(f"結果：{result}")
-    except Exception as e:
-        st.error(f"エラー：{e}")
+# Canvas の表示
+canvas_result = st_canvas(
+    fill_color="rgba(255, 165, 0, 0.3)",  # オレンジの半透明
+    stroke_width=stroke_width,
+    stroke_color=stroke_color,
+    background_color=bg_color,
+    background_image=image,
+    update_streamlit=realtime_update,
+    height=height,
+    width=width,
+    drawing_mode=drawing_mode,
+    point_display_radius=point_display_radius,
+    key="canvas",
+)
+
+# 描画結果の表示
+st.subheader("🖼️ 描画結果")
+if canvas_result.image_data is not None:
+    st.image(canvas_result.image_data)
+
+# 描画オブジェクトのデータ表示
+if canvas_result.json_data is not None:
+    st.subheader("📋 描画オブジェクトの詳細")
+    objects = pd.json_normalize(canvas_result.json_data["objects"])
+    for col in objects.select_dtypes(include=["object"]).columns:
+        objects[col] = objects[col].astype("str")
+    st.dataframe(objects)
