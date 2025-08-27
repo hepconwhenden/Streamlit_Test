@@ -2,8 +2,10 @@ import streamlit as st
 from streamlit_drawable_canvas import st_canvas
 from PIL import Image
 import pandas as pd
+import numpy as np
 
-st.title("📸 画像に描画できる Streamlit アプリ")
+st.set_page_config(page_title="画像描画アプリ", layout="wide")
+st.title("🖍️ Streamlitで画像に描画するツール")
 
 # Sidebar 設定
 st.sidebar.header("🛠️ 描画ツール設定")
@@ -21,12 +23,12 @@ bg_image_file = st.sidebar.file_uploader("背景画像をアップロード", ty
 
 # 背景画像の読み込みとサイズ取得
 if bg_image_file:
-    image = Image.open(bg_image_file).convert("RGB") 
-
+    image = Image.open(bg_image_file).convert("RGB")
+    image_np = np.array(image)
     width, height = image.size
 else:
-    image = None
-    width, height = 600, 400  # デフォルトサイズ
+    image_np = None
+    width, height = 600, 400
 
 # Canvas の表示
 canvas_result = st_canvas(
@@ -34,7 +36,7 @@ canvas_result = st_canvas(
     stroke_width=stroke_width,
     stroke_color=stroke_color,
     background_color=bg_color,
-    background_image=image,
+    background_image=image_np,
     update_streamlit=realtime_update,
     height=height,
     width=width,
