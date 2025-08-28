@@ -6,14 +6,18 @@ import io
 st.set_page_config(page_title="画像落書きアプリ", layout="centered")
 st.title("🖌️ 画像に落書きするアプリ")
 
+# 画像アップロード
 uploaded_file = st.file_uploader("画像をアップロードしてください", type=["png", "jpg", "jpeg"])
 
 if uploaded_file:
     # バイナリ読み込み → PIL形式に変換 → RGBAモードに統一
     image_bytes = uploaded_file.read()
     image = Image.open(io.BytesIO(image_bytes)).convert("RGBA")
+
+    # Streamlitが内部で扱えるように一度表示（これが重要）
     st.image(image, caption="元画像", use_container_width=True)
 
+    # Canvas描画
     canvas_result = st_canvas(
         fill_color="rgba(255, 0, 0, 0.3)",  # 塗りつぶし色
         stroke_width=5,
@@ -26,6 +30,7 @@ if uploaded_file:
         key="canvas",
     )
 
+    # 描画結果の保存と表示
     if st.button("保存して表示"):
         if canvas_result.image_data is not None:
             result_image = Image.fromarray(canvas_result.image_data.astype("uint8"))
