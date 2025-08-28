@@ -6,7 +6,6 @@ import io
 st.set_page_config(page_title="画像落書きアプリ", layout="centered")
 st.title("🖌️ 画像に落書きするアプリ")
 
-# 画像アップロード
 uploaded_file = st.file_uploader("画像をアップロードしてください", type=["png", "jpg", "jpeg"])
 
 if uploaded_file:
@@ -19,7 +18,7 @@ if uploaded_file:
         fill_color="rgba(255, 0, 0, 0.3)",  # 塗りつぶし色
         stroke_width=5,
         stroke_color="#ff0000",
-        background_image=image,
+        background_image=image,  # PIL.Image形式で渡す
         update_streamlit=True,
         height=image.height,
         width=image.width,
