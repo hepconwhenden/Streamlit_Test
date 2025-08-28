@@ -9,17 +9,14 @@ st.title("画像に落書きするアプリ 🎨")
 # 画像アップロード
 uploaded_file = st.file_uploader("画像をアップロード", type=["png", "jpg", "jpeg"])
 if uploaded_file:
-    image = Image.open(uploaded_file)
+    image = Image.open(uploaded_file).convert("RGBA")  # ← ここで明示的にRGBAに変換
     st.image(image, caption="元画像", use_container_width=True)
 
-
-
-    # Canvas設定
     canvas_result = st_canvas(
-        fill_color="rgba(255, 0, 0, 0.3)",  # 塗りつぶし色
+        fill_color="rgba(255, 0, 0, 0.3)",
         stroke_width=5,
         stroke_color="#ff0000",
-        background_image=image,
+        background_image=image,  # PIL.Image形式で渡す
         update_streamlit=True,
         height=image.height,
         width=image.width,
