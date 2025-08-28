@@ -1,22 +1,25 @@
 import streamlit as st
 from streamlit_drawable_canvas import st_canvas
 from PIL import Image
-import numpy as np
 import io
 
-st.title("画像に落書きするアプリ 🎨")
+st.set_page_config(page_title="画像落書きアプリ", layout="centered")
+st.title("🖌️ 画像に落書きするアプリ")
 
 # 画像アップロード
-uploaded_file = st.file_uploader("画像をアップロード", type=["png", "jpg", "jpeg"])
+uploaded_file = st.file_uploader("画像をアップロードしてください", type=["png", "jpg", "jpeg"])
+
 if uploaded_file:
-    image = Image.open(uploaded_file).convert("RGBA")  # ← ここで明示的にRGBAに変換
+    # PIL形式に変換し、RGBAモードに統一
+    image = Image.open(uploaded_file).convert("RGBA")
     st.image(image, caption="元画像", use_container_width=True)
 
+    # Canvas描画
     canvas_result = st_canvas(
-        fill_color="rgba(255, 0, 0, 0.3)",
+        fill_color="rgba(255, 0, 0, 0.3)",  # 塗りつぶし色
         stroke_width=5,
         stroke_color="#ff0000",
-        background_image=image,  # PIL.Image形式で渡す
+        background_image=image,
         update_streamlit=True,
         height=image.height,
         width=image.width,
@@ -24,11 +27,18 @@ if uploaded_file:
         key="canvas",
     )
 
-    # 保存処理
-    if st.button("保存"):
+    # 描画結果の保存と表示
+    if st.button("保存して表示"):
         if canvas_result.image_data is not None:
             result_image = Image.fromarray(canvas_result.image_data.astype("uint8"))
-            st.image(result_image, caption="保存された画像")
+            st.image(result_image, caption="保存された画像", use_container_width=True)
+
+            # ダウンロードボタン
             buf = io.BytesIO()
             result_image.save(buf, format="PNG")
-            st.download_button("ダウンロード", buf.getvalue(), file_name="drawing.png", mime="image/png")
+            st.download_button(
+                label="画像をダウンロード",
+                data=buf.getvalue(),
+                file_name="drawing.png",
+                mime="image/png"
+            )
