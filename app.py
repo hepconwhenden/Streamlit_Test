@@ -10,7 +10,9 @@ st.title("画像に落書きするアプリ 🎨")
 uploaded_file = st.file_uploader("画像をアップロード", type=["png", "jpg", "jpeg"])
 if uploaded_file:
     image = Image.open(uploaded_file)
-    st.image(image, caption="元画像", use_column_width=True)
+    st.image(image, caption="元画像", use_container_width=True)
+
+
 
     # Canvas設定
     canvas_result = st_canvas(
