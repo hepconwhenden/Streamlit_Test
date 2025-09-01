@@ -1,31 +1,37 @@
 import streamlit as st
 import time
-from datetime import datetime
+import pyttsx3
 
-st.title("⏳ ミリ秒付きタイマー")
+# 音声エンジン初期化（注意：一部環境では非同期処理が必要）
+engine = pyttsx3.init()
+engine.setProperty('rate', 150)  # 読み上げ速度
 
-total_time = st.number_input("合計時間（秒）", min_value=1, value=10)
-interval = st.number_input("読み上げ間隔（秒）", min_value=1, value=3)
+st.title("📢 1秒間隔で読み上げするタイマー")
+
+# 入力：合計時間と読み上げ間隔
+total_time = st.number_input("合計時間（秒）", min_value=1, value=30)
+interval = st.number_input("読み上げ間隔（秒）", min_value=1, value=10)
 
 if st.button("スタート"):
     placeholder = st.empty()
     start_time = time.time()
-    next_read_time = start_time + interval
+    next_read = interval
 
     while True:
-        now = time.time()
-        elapsed = now - start_time
+        elapsed = int(time.time() - start_time)
         remaining = total_time - elapsed
 
         if remaining <= 0:
             placeholder.markdown("### ✅ タイマー終了！")
+            engine.say("タイマー終了です")
+            engine.runAndWait()
             break
 
-        # ミリ秒付きで表示（小数点第3位まで）
-        placeholder.markdown(f"### 残り時間：{remaining:.3f} 秒")
+        placeholder.markdown(f"### 残り時間：{remaining} 秒")
 
-        if now >= next_read_time:
-            st.write(f"🔊 読み上げ：残り {remaining:.3f} 秒")
-            next_read_time += interval
+        # 読み上げタイミング（1秒ごとにチェック）
+        if elapsed != 0 and elapsed % interval == 0:
+            engine.say(f"{elapsed} 秒経過しました")
+            engine.runAndWait()
 
-        time.sleep(0.05)  # 50ms間隔で更新
+        time.sleep(1)
