@@ -2,8 +2,12 @@ import streamlit as st
 import time
 from gtts import gTTS
 import base64
+import os
 
 def autoplay_audio(file_path):
+    if not os.path.exists(file_path):
+        st.error(f"ファイルが見つかりません: {file_path}")
+        return
     with open(file_path, "rb") as f:
         audio_bytes = f.read()
         b64 = base64.b64encode(audio_bytes).decode()
@@ -32,11 +36,10 @@ if st.button("スタート"):
         if remaining <= 0:
             placeholder.markdown("### ✅ タイマー終了！")
 
-            # 🔊 ビープ音を先に再生
-            autoplay_audio("/data/beep.mp3")
-            time.sleep(1.5)  # 少し待ってから次の音声（調整可能）
+            # 🔊 ビープ音 → 少し待って → 読み上げ
+            autoplay_audio("beep.mp3")
+            time.sleep(2)  # ビープ音の長さに応じて調整
 
-            # 📢 「タイマー終了です」を読み上げ
             tts = gTTS("タイマー終了です", lang='ja')
             tts.save("end.mp3")
             autoplay_audio("end.mp3")
@@ -44,13 +47,11 @@ if st.button("スタート"):
 
         placeholder.markdown(f"### 残り時間：{remaining} 秒")
 
-        # 通常の読み上げ（ラストフェーズ前）
         if elapsed != 0 and elapsed % interval == 0 and remaining > last_phase:
             tts = gTTS(f"{elapsed} 秒経過", lang='ja')
             tts.save("say.mp3")
             autoplay_audio("say.mp3")
 
-        # ラストフェーズ：毎秒読み上げ
         if remaining <= last_phase:
             tts = gTTS(f"{remaining}", lang='ja')
             tts.save("countdown.mp3")
