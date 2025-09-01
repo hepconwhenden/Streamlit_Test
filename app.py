@@ -4,8 +4,6 @@ from gtts import gTTS
 import base64
 import os
 
-
-
 def autoplay_audio(file_path):
     if not os.path.exists(file_path):
         st.error(f"ファイルが見つかりません: {file_path}")
@@ -34,7 +32,7 @@ if st.button("スタート"):
     tts = gTTS("タイマーを開始します", lang='ja')
     tts.save("start.mp3")
     autoplay_audio("start.mp3")
-    time.sleep(2)  # アナウンスが終わるまで待機
+    time.sleep(2)
 
     start_time = time.time()
 
@@ -42,16 +40,7 @@ if st.button("スタート"):
         elapsed = int(time.time() - start_time)
         remaining = total_time - elapsed
 
-        if remaining <= 0:
-            placeholder.markdown("### ✅ タイマー終了！")
-
-            # 🔊 ビープ音 → 少し待って → 終了アナウンス
-            autoplay_audio("/data/beep.mp3")
-            time.sleep(2)
-
-            tts = gTTS("タイマー終了です", lang='ja')
-            tts.save("end.mp3")
-            autoplay_audio("end.mp3")
+        if remaining < 0:
             break
 
         placeholder.markdown(f"### 残り時間：{remaining} 秒")
@@ -62,10 +51,18 @@ if st.button("スタート"):
             tts.save("say.mp3")
             autoplay_audio("say.mp3")
 
-        # ラストフェーズ：毎秒読み上げ
+        # ラストフェーズ：毎秒読み上げ（0秒も含む）
         if remaining <= last_phase:
             tts = gTTS(f"{remaining}", lang='ja')
             tts.save("countdown.mp3")
             autoplay_audio("countdown.mp3")
+
+        if remaining == 0:
+            time.sleep(1)  # 最後の「0秒」読み上げ後に少し待つ
+            placeholder.markdown("### ✅ タイマー終了！")
+            tts = gTTS("タイマー終了です", lang='ja')
+            tts.save("end.mp3")
+            autoplay_audio("end.mp3")
+            break
 
         time.sleep(1)
