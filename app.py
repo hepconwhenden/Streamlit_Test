@@ -63,11 +63,18 @@ if st.button("スタート"):
             autoplay_audio("countdown.mp3")
 
         if remaining == 0:
-            time.sleep(1)
+            # 🔊 0秒の読み上げ（再度明示的に）
+            tts = gTTS("0", lang='ja')
+            tts.save("zero.mp3")
+            autoplay_audio("zero.mp3")
+            time.sleep(1.5)
+
+            # ✅ 終了アナウンス
             placeholder.markdown("### ✅ タイマー終了！")
             tts = gTTS("タイマー終了です", lang='ja')
             tts.save("end.mp3")
             autoplay_audio("end.mp3")
+            time.sleep(2)
             break
 
         time.sleep(1)
