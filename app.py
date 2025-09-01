@@ -46,7 +46,7 @@ if st.button("スタート"):
 
         # ラストフェーズ：毎秒読み上げ
         if remaining <= last_phase:
-            tts = gTTS(f"残り {remaining} 秒", lang='ja')
+            tts = gTTS(f" {remaining} ", lang='ja')
             tts.save("countdown.mp3")
             autoplay_audio("countdown.mp3")
 
