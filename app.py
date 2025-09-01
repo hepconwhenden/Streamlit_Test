@@ -31,6 +31,12 @@ if st.button("スタート"):
 
         if remaining <= 0:
             placeholder.markdown("### ✅ タイマー終了！")
+
+            # 🔊 ビープ音を先に再生
+            autoplay_audio("/data/beep.mp3")
+            time.sleep(1.5)  # 少し待ってから次の音声（調整可能）
+
+            # 📢 「タイマー終了です」を読み上げ
             tts = gTTS("タイマー終了です", lang='ja')
             tts.save("end.mp3")
             autoplay_audio("end.mp3")
@@ -46,7 +52,7 @@ if st.button("スタート"):
 
         # ラストフェーズ：毎秒読み上げ
         if remaining <= last_phase:
-            tts = gTTS(f" {remaining} ", lang='ja')
+            tts = gTTS(f"{remaining}", lang='ja')
             tts.save("countdown.mp3")
             autoplay_audio("countdown.mp3")
 
