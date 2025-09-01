@@ -23,15 +23,25 @@ st.title("⏳ タイマー開始・終了アナウンス付きタイマー")
 # 入力項目（分＋秒）
 minutes_input = st.number_input("分（0以上）", min_value=0, value=1)
 seconds_input = st.number_input("秒（0以上、60以上もOK）", min_value=0, value=0)
-
-# 合計秒数を計算（秒が60以上でも繰り上げ）
 total_time = minutes_input * 60 + seconds_input
 
 interval = st.number_input("通常読み上げ間隔（秒）", min_value=1, value=15)
-last_phase = st.number_input("ラスト何秒から毎秒読み上げするか", min_value=1, max_value=total_time, value=10)
+
+# last_phase はスタート時に入力・検証
+last_phase_input = st.text_input("ラスト何秒から毎秒読み上げするか（整数）", value="10")
 
 if st.button("スタート"):
     placeholder = st.empty()
+
+    # バリデーション
+    try:
+        last_phase = int(last_phase_input)
+        if last_phase < 1 or last_phase > total_time:
+            st.error(f"ラストフェーズの秒数は 1〜{total_time} の範囲で指定してください。")
+            st.stop()
+    except ValueError:
+        st.error("ラストフェーズの秒数は整数で入力してください。")
+        st.stop()
 
     # 🔔 開始アナウンス
     tts = gTTS("タイマーを開始します", lang='ja')
@@ -63,13 +73,11 @@ if st.button("スタート"):
             autoplay_audio("countdown.mp3")
 
         if remaining == 0:
-            # 🔊 0秒の読み上げ（再度明示的に）
             tts = gTTS("0", lang='ja')
             tts.save("zero.mp3")
             autoplay_audio("zero.mp3")
             time.sleep(1.5)
 
-            # ✅ 終了アナウンス
             placeholder.markdown("### ✅ タイマー終了！")
             tts = gTTS("タイマー終了です", lang='ja')
             tts.save("end.mp3")
