@@ -21,12 +21,12 @@ def autoplay_audio(file_path):
 st.title("⏳ 秒数読み上げタイマーアプリ")
 
 # 入力項目（分＋秒）
-st.write("⏳ 時間入力（分＋秒）")
+st.write("⏰ 時間入力（分＋秒）")
 minutes_input = st.number_input("分（0以上）", min_value=0, value=1)
 seconds_input = st.number_input("秒（0以上、60以上もOK）", min_value=0, value=0)
 total_time = minutes_input * 60 + seconds_input
 
-st.write("⚙ 読み上げ設定")
+st.write("🔊 読み上げ設定")
 interval = st.number_input("読み上げ間隔（秒）", min_value=1, value=15)
 last_phase = st.number_input("ラスト何秒から毎秒読み上げするか", min_value=1, value=10, step=1)
 
