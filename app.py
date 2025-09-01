@@ -26,19 +26,14 @@ seconds_input = st.number_input("秒（0以上、60以上もOK）", min_value=0,
 total_time = minutes_input * 60 + seconds_input
 
 interval = st.number_input("通常読み上げ間隔（秒）", min_value=1, value=15)
-last_phase_input = st.number_input("ラスト何秒から毎秒読み上げするか（整数）", min_value=0, value="10")
+last_phase = st.number_input("ラスト何秒から毎秒読み上げするか", min_value=1, value=10, step=1)
 
 if st.button("スタート"):
     placeholder = st.empty()
 
     # バリデーション
-    try:
-        last_phase = int(last_phase_input)
-        if last_phase < 1 or last_phase > total_time:
-            st.error(f"ラストフェーズの秒数は 1〜{total_time} の範囲で指定してください。")
-            st.stop()
-    except ValueError:
-        st.error("ラストフェーズの秒数は整数で入力してください。")
+    if last_phase > total_time:
+        st.error(f"ラストフェーズの秒数は合計時間（{total_time}秒）以下で指定してください。")
         st.stop()
 
     # 🔔 開始アナウンス
