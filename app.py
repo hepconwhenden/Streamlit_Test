@@ -40,7 +40,7 @@ if st.button("スタート"):
 
         # 通常の読み上げ（ラストフェーズ前）
         if elapsed != 0 and elapsed % interval == 0 and remaining > last_phase:
-            tts = gTTS(f"{elapsed} 秒経過しました", lang='ja')
+            tts = gTTS(f"{elapsed} 秒経過", lang='ja')
             tts.save("say.mp3")
             autoplay_audio("say.mp3")
 
