@@ -26,8 +26,6 @@ seconds_input = st.number_input("秒（0以上、60以上もOK）", min_value=0,
 total_time = minutes_input * 60 + seconds_input
 
 interval = st.number_input("通常読み上げ間隔（秒）", min_value=1, value=15)
-
-# last_phase はスタート時に入力・検証
 last_phase_input = st.text_input("ラスト何秒から毎秒読み上げするか（整数）", value="10")
 
 if st.button("スタート"):
@@ -66,12 +64,13 @@ if st.button("スタート"):
             tts.save("say.mp3")
             autoplay_audio("say.mp3")
 
-        # ラストフェーズ：毎秒読み上げ（0秒も含む）
-        if remaining <= last_phase:
+        # ラストフェーズ：毎秒読み上げ（0秒除く）
+        if remaining <= last_phase and remaining != 0:
             tts = gTTS(f"{remaining}", lang='ja')
             tts.save("countdown.mp3")
             autoplay_audio("countdown.mp3")
 
+        # 0秒の読み上げと終了アナウンス
         if remaining == 0:
             tts = gTTS("0", lang='ja')
             tts.save("zero.mp3")
