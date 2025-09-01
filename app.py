@@ -14,10 +14,12 @@ def autoplay_audio(file_path):
         """
         st.markdown(audio_html, unsafe_allow_html=True)
 
-st.title("🔊 自動再生タイマー")
+st.title("⏳ ラスト秒数を指定して読み上げるタイマー")
 
-total_time = st.number_input("合計時間（秒）", min_value=1, value=30)
-interval = st.number_input("読み上げ間隔（秒）", min_value=1, value=10)
+# 入力項目
+total_time = st.number_input("合計時間（秒）", min_value=10, value=60)
+interval = st.number_input("通常読み上げ間隔（秒）", min_value=1, value=15)
+last_phase = st.number_input("ラスト何秒から毎秒読み上げするか", min_value=1, max_value=total_time, value=10)
 
 if st.button("スタート"):
     placeholder = st.empty()
@@ -36,9 +38,16 @@ if st.button("スタート"):
 
         placeholder.markdown(f"### 残り時間：{remaining} 秒")
 
-        if elapsed != 0 and elapsed % interval == 0:
-            tts = gTTS(f"{elapsed} 秒経過", lang='ja')
+        # 通常の読み上げ（ラストフェーズ前）
+        if elapsed != 0 and elapsed % interval == 0 and remaining > last_phase:
+            tts = gTTS(f"{elapsed} 秒経過しました", lang='ja')
             tts.save("say.mp3")
             autoplay_audio("say.mp3")
+
+        # ラストフェーズ：毎秒読み上げ
+        if remaining <= last_phase:
+            tts = gTTS(f"残り {remaining} 秒", lang='ja')
+            tts.save("countdown.mp3")
+            autoplay_audio("countdown.mp3")
 
         time.sleep(1)
