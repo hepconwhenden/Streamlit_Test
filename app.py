@@ -20,8 +20,13 @@ def autoplay_audio(file_path):
 
 st.title("⏳ タイマー開始・終了アナウンス付きタイマー")
 
-# 入力項目
-total_time = st.number_input("合計時間（秒）", min_value=10, value=60)
+# 入力項目（分＋秒）
+minutes_input = st.number_input("分（0以上）", min_value=0, value=1)
+seconds_input = st.number_input("秒（0以上、60以上もOK）", min_value=0, value=0)
+
+# 合計秒数を計算（秒が60以上でも繰り上げ）
+total_time = minutes_input * 60 + seconds_input
+
 interval = st.number_input("通常読み上げ間隔（秒）", min_value=1, value=15)
 last_phase = st.number_input("ラスト何秒から毎秒読み上げするか", min_value=1, max_value=total_time, value=10)
 
@@ -58,7 +63,7 @@ if st.button("スタート"):
             autoplay_audio("countdown.mp3")
 
         if remaining == 0:
-            time.sleep(1)  # 最後の「0秒」読み上げ後に少し待つ
+            time.sleep(1)
             placeholder.markdown("### ✅ タイマー終了！")
             tts = gTTS("タイマー終了です", lang='ja')
             tts.save("end.mp3")
