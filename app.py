@@ -1,31 +1,28 @@
 import streamlit as st
 
-st.set_page_config(page_title="数取器", layout="centered")
+st.set_page_config(page_title="縦型数取器", layout="centered")
 
 # 初期化
 if "count" not in st.session_state:
     st.session_state.count = 0
 
-# カウント表示（中央揃え）
+# カウントアップボタン（上）
+st.markdown("<div style='text-align:center;'>", unsafe_allow_html=True)
+if st.button("➕ カウントアップ", use_container_width=True):
+    st.session_state.count += 1
+
+# 数値表示（中央）
 st.markdown(
     f"""
-    <div style="text-align:center;">
-        <h1 style="font-size:5em;">📱 {st.session_state.count}</h1>
-    </div>
+    <h1 style="text-align:center; font-size:5em; margin:0.5em 0;">📱 {st.session_state.count}</h1>
     """,
     unsafe_allow_html=True
 )
 
-# カウントアップ・ダウンボタン（数値のすぐ下に並べる）
-col1, col2, col3 = st.columns([1, 1, 1])
-with col1:
-    if st.button("➖ カウントダウン", use_container_width=True):
-        st.session_state.count -= 1
-with col2:
-    st.empty()  # 中央スペース（空白）
-with col3:
-    if st.button("➕ カウントアップ", use_container_width=True):
-        st.session_state.count += 1
+# カウントダウンボタン（下）
+if st.button("➖ カウントダウン", use_container_width=True):
+    st.session_state.count -= 1
+st.markdown("</div>", unsafe_allow_html=True)
 
 # リセットボタン（サイドバー）
 with st.sidebar:
