@@ -5,20 +5,8 @@ st.set_page_config(page_title="数取器", layout="centered")
 # 初期化
 if "count" not in st.session_state:
     st.session_state.count = 0
-if "increment_flag" not in st.session_state:
-    st.session_state.increment_flag = False
 
-# カウントアップ処理（フラグを使う）
-if st.button("カウントアップ", use_container_width=True):
-    st.session_state.increment_flag = True
-    st.rerun()
-
-# フラグが立っていたらカウントを増やす
-if st.session_state.increment_flag:
-    st.session_state.count += 1
-    st.session_state.increment_flag = False
-
-# カウント表示
+# カウント表示（中央揃え）
 st.markdown(
     f"""
     <div style="text-align:center;">
@@ -27,6 +15,17 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+# カウントアップ・ダウンボタン（数値のすぐ下に並べる）
+col1, col2, col3 = st.columns([1, 1, 1])
+with col1:
+    if st.button("➖ カウントダウン", use_container_width=True):
+        st.session_state.count -= 1
+with col2:
+    st.empty()  # 中央スペース（空白）
+with col3:
+    if st.button("➕ カウントアップ", use_container_width=True):
+        st.session_state.count += 1
 
 # リセットボタン（サイドバー）
 with st.sidebar:
