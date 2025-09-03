@@ -13,8 +13,8 @@ def increment():
 # リセット処理
 def reset():
     st.session_state.count = 0
-    st.experimental_rerun()
-
+    st.rerun()
+    
 # カウント表示（中央揃え）
 st.markdown(
     f"""
