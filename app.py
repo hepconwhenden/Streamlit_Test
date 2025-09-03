@@ -15,7 +15,6 @@ if st.button("➕ カウントアップ", use_container_width=True):
     st.session_state.action = "up"
     st.rerun()
 
-# 数値表示（中央）
 st.markdown(
     f"""
     <h1 style="text-align:center; font-size:5em; margin:0.5em 0;">📱 {st.session_state.count}</h1>
